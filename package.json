@@ -1,0 +1,29 @@
+{
+  "name": "mapbox-download-ctrl",
+  "version": "1.0.0",
+  "description": "Control for downloading the background tiles in the map you're currently viewing.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/karissa/mapbox-download-ctrl.git"
+  },
+  "keywords": [
+    "mapbox",
+    "download",
+    "control",
+    "ctrl",
+    "tiles",
+    "streamsaver",
+    "stream",
+    "tar"
+  ],
+  "author": "Karissa McKelvey",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/karissa/mapbox-download-ctrl/issues"
+  },
+  "homepage": "https://github.com/karissa/mapbox-download-ctrl#readme"
+}
