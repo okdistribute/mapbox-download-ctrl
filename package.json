@@ -2,9 +2,9 @@
   "name": "mapbox-download-ctrl",
   "version": "1.0.0",
   "description": "Control for downloading the background tiles in the map you're currently viewing.",
-  "main": "index.js",
+  "main": "es5.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "babel index.js --out-file es5.js"
   },
   "repository": {
     "type": "git",
@@ -25,5 +25,25 @@
   "bugs": {
     "url": "https://github.com/karissa/mapbox-download-ctrl/issues"
   },
-  "homepage": "https://github.com/karissa/mapbox-download-ctrl#readme"
+  "homepage": "https://github.com/karissa/mapbox-download-ctrl#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1"
+  },
+  "dependencies": {
+    "@mapbox/tilejson": "^1.1.0",
+    "@mapbox/tilelive": "github:karissa/tilelive",
+    "@yaga/tile-utils": "^1.0.0",
+    "get-form-data": "^2.0.0",
+    "karissa/tilelive": "^6.0.0",
+    "pretty-bytes": "^4.0.2",
+    "prop-types": "^15.6.1",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
+    "streamsaver": "^1.0.1",
+    "tilelive-http": "^0.14.0",
+    "tilelive-streaming": "^0.7.7",
+    "tilelive-tar": "^1.1.0"
+  }
 }
