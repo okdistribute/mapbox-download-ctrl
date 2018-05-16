@@ -1,5 +1,5 @@
 {
-  "name": "mapbox-download-ctrl",
+  "name": "mbgl-downloadl-ctrl",
   "version": "1.0.0",
   "description": "Control for downloading the background tiles in the map you're currently viewing.",
   "main": "es5.js",

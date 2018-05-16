@@ -1,4 +1,4 @@
-# mapbox-download-ctrl
+# mbgl-download-ctrl
 
 Control for downloading the background tiles in the map you're currently viewing.
 
@@ -18,7 +18,7 @@ behavior by passing your own `onDownload` funciton to the control.
 ## Usage
 
 ```js
-var DownloadControl = require('mapbox-download-control')
+var DownloadControl = require('mpgl-download-control')
 var mapboxgl = require('mapbox-gl')
 
 const bingSource = {
