@@ -32,8 +32,6 @@
     "babel-preset-react": "^6.24.1"
   },
   "dependencies": {
-    "@mapbox/tilejson": "^1.1.0",
-    "@mapbox/tilelive": "github:karissa/tilelive",
     "@yaga/tile-utils": "^1.0.0",
     "get-form-data": "^2.0.0",
     "pretty-bytes": "^4.0.2",
@@ -41,8 +39,6 @@
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "streamsaver": "^1.0.1",
-    "tilelive-http": "^0.14.0",
-    "tilelive-streaming": "^0.7.7",
-    "tilelive-tar": "^1.1.0"
+    "tile-dl-client": "^1.0.0"
   }
 }

@@ -1,6 +1,6 @@
 var React = require('react')
 var form = require('get-form-data')
-var download = require('./download')
+var download = require('tile-dl-client')
 var ReactDOM = require('react-dom')
 var bytes = require('pretty-bytes')
 var utils = require('@yaga/tile-utils')
