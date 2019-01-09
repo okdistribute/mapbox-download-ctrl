@@ -1,19 +1,15 @@
 # mbgl-dl-ctrl
 
-Control for downloading the background tiles in the map you're currently viewing.
+MapBox control for downloading the background tiles in the map you're currently viewing.
 
 [See Example at http://tiles.okdistribute.xyz](http://tiles.okdistribute.xyz)
 
 It's recommended to use Bing background tiles because Mapbox's terms of service
 are more restrictive when it comes to downloading and using tiles offline.
 
-By Default, the download control will use `StreamSaver.js` to download the
-tiles to a `tar` file, without hitting the server. This is cool! But it only
-works on the latest version of Google Chrome (and maybe some others, but you
-should really check).
+Will download the tiles to a `tar` file, without hitting the server.
 
-If you want to control the download yourself, you can override that default
-behavior by passing your own `onDownload` funciton to the control. 
+Only works in Google Chrome. 
 
 ## Usage
 

@@ -14,7 +14,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var React = require('react');
 var form = require('get-form-data');
-var download = require('./download');
+var download = require('tile-dl-client');
 var ReactDOM = require('react-dom');
 var bytes = require('pretty-bytes');
 var utils = require('@yaga/tile-utils');
@@ -44,14 +44,16 @@ DownloadControl.prototype._onDownload = function (data) {
   }, []);
   var selectedSource = sources[selected[0]];
   var url = getUrl(selectedSource);
-  download(url, data, function (stream) {
-    // TODO: make download unclickable?
-    stream.on('error', function (err) {
-      throw err;
-    });
-    stream.on('end', function () {
-      // TODO: make download clickable again.
-    });
+  download(url, data, function (err, stream) {
+    if (err) console.error(err);
+    var filename = data.path || 'tiles.tar';
+    var element = document.createElement('a');
+    element.setAttribute('href', '/export/' + filename);
+    element.setAttribute('download', filename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
   });
   return false;
 };
@@ -204,12 +206,6 @@ var DownloadOptionBox = function (_React$Component) {
         React.createElement(
           'div',
           null,
-          React.createElement(
-            'p',
-            null,
-            'Estimated Size: ',
-            this.estimatedSize(IBBox, minZoom, maxZoom)
-          ),
           React.createElement(
             'button',
             { onClick: this.zoomClick.bind(this) },

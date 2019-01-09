@@ -29,14 +29,16 @@ DownloadControl.prototype._onDownload = function (data) {
   }, [])
   var selectedSource = sources[selected[0]]
   var url = getUrl(selectedSource)
-  download(url, data, function (stream) {
-    // TODO: make download unclickable?
-    stream.on('error', function (err) {
-      throw err
-    })
-    stream.on('end', function () {
-      // TODO: make download clickable again.
-    })
+  download(url, data, function (err, stream) {
+    if (err) console.error(err)
+    var filename = data.path || 'tiles.tar'
+    var element = document.createElement('a')
+    element.setAttribute('href', `/export/${filename}`)
+    element.setAttribute('download', filename)
+    element.style.display = 'none'
+    document.body.appendChild(element)
+    element.click()
+    document.body.removeChild(element)
   })
   return false
 }
@@ -173,7 +175,6 @@ class DownloadOptionBox extends React.Component {
         <Input label='Min Zoom' name='minZoom' onChange={this.onChange.bind(this)} defaultValue={minZoom} />
         <Input label='Max Zoom' name='maxZoom' onChange={this.onChange.bind(this)} defaultValue={maxZoom} />
         <div>
-          <p>Estimated Size: {this.estimatedSize(IBBox, minZoom, maxZoom)}</p>
           <button onClick={this.zoomClick.bind(this)}>Zoom to Coordinates</button>
           <button onClick={this.onDownloadClick.bind(this)} type='submit'>Start Downloading</button>
         </div>
