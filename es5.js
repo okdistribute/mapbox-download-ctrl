@@ -26,7 +26,7 @@ function DownloadControl(options) {
 }
 
 function getUrl(source) {
-  if (source.tiles) {
+  if (source && source.tiles) {
     var url = source.tiles[0];
     return url.replace('{quadkey}', '{q}');
   }
@@ -59,8 +59,7 @@ DownloadControl.prototype._getUrl = function () {
     return acc;
   }, []);
   var selectedSource = sources[selected[0]];
-  var url = getUrl(selectedSource);
-  return url;
+  return getUrl(selectedSource);
 };
 
 DownloadControl.prototype._render = function () {
@@ -108,11 +107,15 @@ var DownloadOptionBox = function (_React$Component) {
   _createClass(DownloadOptionBox, [{
     key: '_onDownload',
     value: function _onDownload(data) {
-      var self = this;
+      var url = this.props.getUrl();
+      if (!url) return;
+
       this.setState({
         downloading: true,
         progress: 0
       });
+
+      var self = this;
 
       function done(err, stream) {
         if (err) console.error(err);
@@ -132,7 +135,6 @@ var DownloadOptionBox = function (_React$Component) {
         self.setState({ progress: progress });
       }
 
-      var url = this.props.getUrl();
       download(url, data, done, onprogress);
       return false;
     }
