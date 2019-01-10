@@ -222,7 +222,8 @@ var DownloadOptionBox = function (_React$Component) {
           this.state.downloading ? React.createElement(
             'div',
             { className: 'progress' },
-            this.state.progress
+            Math.round(this.state.progress * 100),
+            '% complete...'
           ) : React.createElement(
             'button',
             { onClick: this.onDownloadClick.bind(this), type: 'submit' },

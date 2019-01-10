@@ -185,7 +185,7 @@ class DownloadOptionBox extends React.Component {
         <div>
           <button onClick={this.zoomClick.bind(this)}>Zoom to Coordinates</button>
           {this.state.downloading
-            ? <div className='progress'>{this.state.progress}</div>
+            ? <div className='progress'>{Math.round(this.state.progress * 100)}% complete...</div>
             : <button onClick={this.onDownloadClick.bind(this)} type='submit'>Start Downloading</button>
           }
         </div>
