@@ -16,8 +16,6 @@ var React = require('react');
 var form = require('get-form-data');
 var download = require('tile-dl-client');
 var ReactDOM = require('react-dom');
-var bytes = require('pretty-bytes');
-var utils = require('@yaga/tile-utils');
 var PropTypes = require('prop-types');
 
 exports.default = DownloadControl;
@@ -34,29 +32,6 @@ function getUrl(source) {
   }
   return false;
 }
-
-DownloadControl.prototype._onDownload = function (data) {
-  var map = this._map;
-  var sources = map.getStyle().sources;
-  var selected = Object.keys(sources).reduce(function (acc, k) {
-    if (map.isSourceLoaded(k)) acc.push(k);
-    return acc;
-  }, []);
-  var selectedSource = sources[selected[0]];
-  var url = getUrl(selectedSource);
-  download(url, data, function (err, stream) {
-    if (err) console.error(err);
-    var filename = data.path || 'tiles.tar';
-    var element = document.createElement('a');
-    element.setAttribute('href', '/export/' + filename);
-    element.style.display = 'none';
-    document.body.appendChild(element);
-    var click = new window.MouseEvent('click');
-    element.dispatchEvent(click);
-    document.body.removeChild(element);
-  });
-  return false;
-};
 
 DownloadControl.prototype.onAdd = function (map) {
   this._map = map;
@@ -76,6 +51,18 @@ DownloadControl.prototype._handleChangeOptions = function (data) {
   this._map.fitBounds([[data.minLng, data.minLat], [data.maxLng, data.maxLat]]);
 };
 
+DownloadControl.prototype._getUrl = function () {
+  var map = this._map;
+  var sources = map.getStyle().sources;
+  var selected = Object.keys(sources).reduce(function (acc, k) {
+    if (map.isSourceLoaded(k)) acc.push(k);
+    return acc;
+  }, []);
+  var selectedSource = sources[selected[0]];
+  var url = getUrl(selectedSource);
+  return url;
+};
+
 DownloadControl.prototype._render = function () {
   var map = this._map;
   var el = document.createElement('div');
@@ -87,13 +74,12 @@ DownloadControl.prototype._render = function () {
     maxLng: bounds._ne.lng,
     maxLat: bounds._ne.lat
   };
-  var onDownload = this.options.onDownload || this._onDownload.bind(this);
 
   ReactDOM.render(React.createElement(DownloadOptionBox, {
+    getUrl: this._getUrl.bind(this),
     IBBox: IBBox,
     minZoom: map.getZoom(),
-    onChange: this._handleChangeOptions.bind(this),
-    onDownload: onDownload }), el);
+    onChange: this._handleChangeOptions.bind(this) }), el);
   return el;
 };
 
@@ -109,11 +95,48 @@ var DownloadOptionBox = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (DownloadOptionBox.__proto__ || Object.getPrototypeOf(DownloadOptionBox)).call(this, props));
 
-    _this.state = _this.props;
+    _this.state = {
+      IBBox: _this.props.IBBox,
+      maxZoom: _this.props.maxZoom,
+      minZoom: _this.props.minZoom,
+      downloading: false,
+      progress: 0
+    };
     return _this;
   }
 
   _createClass(DownloadOptionBox, [{
+    key: '_onDownload',
+    value: function _onDownload(data) {
+      var self = this;
+      this.setState({
+        downloading: true,
+        progress: 0
+      });
+
+      function done(err, stream) {
+        if (err) console.error(err);
+        var filename = data.path || 'tiles.tar';
+        var element = document.createElement('a');
+        element.setAttribute('href', '/export/' + filename);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        var click = new window.MouseEvent('click');
+        element.dispatchEvent(click);
+        document.body.removeChild(element);
+        self.setState({ downloading: false, progress: 0 });
+      }
+
+      function onprogress(progress) {
+        if (!self.state.downloading) return;
+        self.setState({ progress: progress });
+      }
+
+      var url = this.props.getUrl();
+      download(url, data, done, onprogress);
+      return false;
+    }
+  }, {
     key: '_getData',
     value: function _getData(event) {
       var data = form.default(event.target.parentElement.parentElement);
@@ -145,7 +168,7 @@ var DownloadOptionBox = function (_React$Component) {
   }, {
     key: 'zoomClick',
     value: function zoomClick(event) {
-      this.state.onChange(this._getData(event));
+      this.props.onChange(this._getData(event));
       event.preventDefault();
       event.stopPropagation();
       return false;
@@ -154,41 +177,24 @@ var DownloadOptionBox = function (_React$Component) {
     key: 'onDownloadClick',
     value: function onDownloadClick(event) {
       var data = this._getData(event);
-      this.state.onDownload(data);
+      this._onDownload(data);
       event.preventDefault();
       event.stopPropagation();
       return false;
     }
   }, {
-    key: 'estimatedSize',
-    value: function estimatedSize(IBBox, minZoom, maxZoom) {
-      var count = 0;
-      var bbox = IBBox;
-      for (var z = minZoom; z <= maxZoom; z += 1) {
-        var minX = utils.lng2x(bbox.minLng, z);
-        var maxX = utils.lng2x(bbox.maxLng, z);
-        var maxY = utils.lat2y(bbox.minLat, z);
-        var minY = utils.lat2y(bbox.maxLat, z);
-        for (var x = minX; x <= maxX; x += 1) {
-          for (var y = minY; y <= maxY; y += 1) {
-            count += 1;
-          }
-        }
-      }
-      return bytes(count * (6 * 1000));
-    }
-  }, {
     key: 'render',
     value: function render() {
-      var IBBox = this.state.IBBox;
-      var minZoom = Math.floor(this.state.minZoom || 0);
-      var maxZoom = Math.floor(this.state.maxZoom || this.state.minZoom + 1);
+      var IBBox = this.props.IBBox;
+      var minZoom = Math.floor(this.props.minZoom || 0);
+      var maxZoom = Math.floor(this.props.maxZoom || this.props.minZoom + 1);
 
       function onSubmit(event) {
         event.preventDefault();
         event.stopPropagation();
         return false;
       }
+
       return React.createElement(
         'form',
         { id: 'DownloadControl', onSubmit: onSubmit },
@@ -211,7 +217,11 @@ var DownloadOptionBox = function (_React$Component) {
             { onClick: this.zoomClick.bind(this) },
             'Zoom to Coordinates'
           ),
-          React.createElement(
+          this.state.downloading ? React.createElement(
+            'div',
+            { className: 'progress' },
+            this.state.progress
+          ) : React.createElement(
             'button',
             { onClick: this.onDownloadClick.bind(this), type: 'submit' },
             'Start Downloading'
@@ -225,7 +235,7 @@ var DownloadOptionBox = function (_React$Component) {
 }(React.Component);
 
 DownloadOptionBox.propTypes = {
-  onDownload: PropTypes.func.isRequired,
+  getUrl: PropTypes.func.isRequired,
   IBBox: PropTypes.object.isRequired,
   onChange: PropTypes.func.isRequired,
   minZoom: PropTypes.number,
