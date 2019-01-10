@@ -34,10 +34,10 @@ DownloadControl.prototype._onDownload = function (data) {
     var filename = data.path || 'tiles.tar'
     var element = document.createElement('a')
     element.setAttribute('href', `/export/${filename}`)
-    element.setAttribute('download', filename)
     element.style.display = 'none'
     document.body.appendChild(element)
-    element.click()
+    let click = new window.MouseEvent('click')
+    element.dispatchEvent(click)
     document.body.removeChild(element)
   })
   return false
